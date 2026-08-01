@@ -1,0 +1,19 @@
+[project]
+name = "consensus"
+version = "0.0.1"
+description = "hardmode: distributed consensus — Easy tier (Python)"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["consensus"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
