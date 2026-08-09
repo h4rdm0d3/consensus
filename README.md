@@ -14,16 +14,17 @@ executable **oracle** that goes red first. You make it green.
 The oracle is written to fail a *plausible wrong* answer, not just an empty one.
 If a naive solution passes everything, the oracle is broken — open an issue.
 
-## Three tiers per chapter
+## Difficulty
 
-| Tier | What it is | Stack |
+Each chapter is written once, at the difficulty its scope demands. The ramp
+comes from the sequence — build the simple model, then a later chapter exposes
+it to the harder form of the same problem.
+
+| | What it means | Stack |
 | --- | --- | --- |
-| **Easy** | Single process, clean restarts, faults you inject by hand, everything seeded. Build the intuition. | Python |
-| **Hard** | Real processes, sockets, `fsync`, clock drift, `kill -9`. No mocks. The scheduler is the adversary. | Python |
-| **Impossible** | A target a naive-correct build can't hit. Profile, then move the measured hot path to Rust behind the same API. | Python + Rust (PyO3/maturin) |
-
-The Easy oracle must still pass at Hard. Every safety invariant must still pass
-at Impossible. The oracle is the through-line.
+| 🟢 **Easy** | Single process, clean restarts, logical time, seeded faults. Everything reproducible. Models get built here. | Python |
+| 🟡 **Hard** | Real processes, sockets, `fsync`, clock drift, `kill -9`. No mocks; the scheduler is the adversary. | Python |
+| 🔴 **Impossible** | A target a naive-correct build can't hit. Profile, then move the measured hot path to Rust behind the same API. | Python + Rust (PyO3/maturin) |
 
 Nondeterminism is a property of the environment, not the language — Hard stays
 in Python. **Rust is an outcome of measurement, never a premise:** profile
@@ -35,22 +36,23 @@ Sometimes the honest answer is a better algorithm or `mmap`, not Rust.
 
 **Part I — The Log** (single node, on disk). The file *is* a write-ahead log;
 the index *is* a state machine.
-1. The file won't read back ← *start here*
-2. Two values for the same key
-3. The deleted key came back
-4. Replay gives a different answer
-5. The last record is half there
-6. Restart takes an hour
+1. 🟢 The file won't read back ← *start here*
+2. 🟢 Two values for the same key
+3. 🟢 The deleted key came back
+4. 🟢 Replay gives a different answer
+5. 🟡 The last record is half there
+6. 🟡 Restart takes an hour and the file never stops growing
+7. 🔴 fsync costs 10 ms and you need 50k writes/sec
 
-**Part II — The Wire** · 7. Two messages arrived glued together · 8. The reply was for a request you already retried · 9. The instrument
+**Part II — The Wire** · 8. 🟢 The instrument · 9. 🟡 Two messages arrived glued together · 10. 🟡 The reply was for a request you already retried
 
-**Part III — Failure and Time** · 10. The node wasn't dead, it was slow · 11. The reply arrived before the message · 12. Two leaders, one slot, different values
+**Part III — Failure and Time** · 11. 🟢 The node wasn't dead, it was slow · 12. 🟢 The reply arrived before the message · 13. 🟢 Two leaders, one slot, different values
 
-**Part IV — The Algorithm** · 13. Agree on one value, and never change it · 14. Two round-trips per value won't scale · 15. Never two leaders in a term · 16. Index 7 disagrees · 17. A stale leader ate a durable write
+**Part IV — The Algorithm** (in the simulator) · 14. 🟢 Agree on one value, and never change it · 15. 🟢 Two round-trips per value won't scale · 16. 🟢 Never two leaders in a term · 17. 🟢 Index 7 disagrees · 18. 🟢 A stale leader ate a durable write
 
-**Part V — Making It Real** · 18. Recovery takes an hour, and a new node can never catch up · 19. You added two nodes and got two leaders again · 20. The withdrawal ran twice; the read was stale · 21. You can't eyeball a 10k-op history
+**Part V — Reality** · 19. 🟡 Five processes, five sockets, one `kill -9` · 20. 🟡 Recovery takes an hour, and a new node can never catch up · 21. 🟡 You added two nodes and got two leaders again · 22. 🟡 The withdrawal ran twice; the read was stale · 23. 🟡 You can't eyeball a 10k-op history · 24. 🟡 Your tests only run on a healthy network
 
-**Part VI — Proving It** · 22. Failed once in CI, never again · 23. Your tests only run on a healthy network · 24. Passing tests, or untested cases? · 25. Correct and 50× too slow
+**Part VI — Proof and the Frontier** · 25. 🟢 Failed once in CI, never again · 26. 🟢 Passing tests, or untested cases? · 27. 🔴 Correct and 50× too slow
 
 ## Global invariants
 
