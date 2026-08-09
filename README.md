@@ -16,14 +16,20 @@ If a naive solution passes everything, the oracle is broken — open an issue.
 
 ## Three tiers per chapter
 
-| Tier | What it is | Language |
+| Tier | What it is | Stack |
 | --- | --- | --- |
 | **Easy** | Single process, clean restarts, faults you inject by hand, everything seeded. Build the intuition. | Python |
-| **Hard** | Real processes, sockets, `fsync`, clock drift, `kill -9`. No mocks. The scheduler is the adversary. | Rust |
-| **Impossible** | The same correct system at a target a naive-correct build can't hit. Safety invariants are the gate. | Rust |
+| **Hard** | Real processes, sockets, `fsync`, clock drift, `kill -9`. No mocks. The scheduler is the adversary. | Python |
+| **Impossible** | A target a naive-correct build can't hit. Profile, then move the measured hot path to Rust behind the same API. | Python + Rust (PyO3/maturin) |
 
 The Easy oracle must still pass at Hard. Every safety invariant must still pass
 at Impossible. The oracle is the through-line.
+
+Nondeterminism is a property of the environment, not the language — Hard stays
+in Python. **Rust is an outcome of measurement, never a premise:** profile
+first, extract only the hot path, keep the pure-Python implementation so both
+can be benchmarked A/B, and re-run the whole oracle against the native path.
+Sometimes the honest answer is a better algorithm or `mmap`, not Rust.
 
 ## Chapters
 
