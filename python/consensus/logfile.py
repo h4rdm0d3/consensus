@@ -42,9 +42,16 @@ class LogFile:
     def __init__(self, path: str) -> None:
         raise NotImplementedError("Chapter 1: implement LogFile")
 
-    def append(self, key: str, value: str) -> None:
-        """Append one record to the end of the file."""
+    def append(self, key: str, value: str) -> int:
+        """Append one record. Chapter 2: return the offset it was written at."""
         raise NotImplementedError("Chapter 1: implement append")
+
+    def read_at(self, offset: int) -> tuple[str, str]:
+        """Chapter 2: read exactly the one record that starts at `offset`.
+
+        Reads nothing before it and nothing after it.
+        """
+        raise NotImplementedError("Chapter 2: implement read_at")
 
     def scan(self) -> Iterator[tuple[str, str]]:
         """Yield every record, in the order it was written."""
