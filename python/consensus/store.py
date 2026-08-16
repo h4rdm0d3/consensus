@@ -84,7 +84,7 @@ class Store:
             del self.index[k]
         self.log.delete(k)
 
-    def state_hash(self) -> bytes:
+    def state_hash(self) -> str:
         h = hashlib.sha256()
         for k in sorted(self.index):
             offset = self.index[k]
@@ -92,7 +92,7 @@ class Store:
             for x in (k, v):
                 h.update(len(x.encode("utf-8")).to_bytes(8, "little"))
                 h.update(x.encode("utf-8"))
-        return h.digest()
+        return h.hexdigest()
 
     def close(self) -> None:
         self.log.close()
