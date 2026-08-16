@@ -39,6 +39,7 @@ The API:
 Make python/tests/test_ch02_index.py go from red to green.
 """
 
+import hashlib
 from collections.abc import Iterator
 
 from consensus.logfile import DeletedRecordError, LogFile, RecordState
@@ -82,6 +83,16 @@ class Store:
         if k in self.index:
             del self.index[k]
         self.log.delete(k)
+
+    def state_hash(self) -> bytes:
+        h = hashlib.sha256()
+        for k in sorted(self.index):
+            offset = self.index[k]
+            _, v = self.log.read_at(offset)
+            for x in (k, v):
+                h.update(len(x.encode("utf-8")).to_bytes(8, "little"))
+                h.update(x.encode("utf-8"))
+        return h.digest()
 
     def close(self) -> None:
         self.log.close()
