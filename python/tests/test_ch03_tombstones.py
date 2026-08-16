@@ -152,6 +152,46 @@ def test_a_deleted_key_costs_no_record_read(path):
     assert log.scans == before_scans, "a deleted key should not walk the log"
 
 
+def test_scan_records_what_actually_happened(tmp_path):
+    # scan() is a history view — Chapter 2 fixed that: every version a key ever
+    # had is reported, in order. So it must be injective over histories: three
+    # logs that differ must render differently. Anything that rebuilds a log
+    # from scan() (compaction, replication, backup) depends on this.
+    #
+    #   A: set k="v", delete k   -> k does not exist
+    #   B: set k="v", set k=""   -> k exists, empty value
+    #   C: set k="v"             -> k exists, "v"
+    #
+    # Rendering a tombstone as ""  collapses A into B.
+    # Omitting the tombstone entirely collapses A into C.
+    def build(name, ops):
+        p = str(tmp_path / name)
+        s = Store(LogFile(p))
+        for op in ops:
+            s.delete(op[0]) if len(op) == 1 else s.set(*op)
+        s.close()
+        return p
+
+    pa = build("a.log", [("k", "v"), ("k",)])
+    pb = build("b.log", [("k", "v"), ("k", "")])
+    pc = build("c.log", [("k", "v")])
+
+    assert Store(LogFile(pa)).get("k") is None
+    assert Store(LogFile(pb)).get("k") == ""
+    assert Store(LogFile(pc)).get("k") == "v"
+
+    sa, sb, sc = (list(LogFile(p).scan()) for p in (pa, pb, pc))
+    assert sa != sb, (
+        "scan() renders a tombstone the same as an empty-string write — the "
+        "record kind survives on disk but is discarded at the API"
+    )
+    assert sa != sc, (
+        "scan() omits the tombstone, so a deleted key is indistinguishable "
+        "from one that was never deleted — a compactor would resurrect it"
+    )
+    assert sb != sc
+
+
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
 def test_matches_a_plain_dict_across_restarts(path, seed):
     # the store, restarted at random moments, must agree with a dict that was
