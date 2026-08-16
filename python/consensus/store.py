@@ -46,18 +46,30 @@ from consensus.logfile import LogFile
 
 class Store:
     def __init__(self, log: LogFile) -> None:
-        raise NotImplementedError("Chapter 2: implement Store")
+        self.log = log
+        self.index: dict[str, int] = {}
+        self.build_index()
+
+    def build_index(self) -> None:
+        for k, _, offset in self.log.index_builder():
+            self.index[k] = offset
 
     def set(self, key: str, value: str) -> None:
-        raise NotImplementedError("Chapter 2: implement set")
+        offset = self.log.append(key, value)
+        self.index[key] = offset
 
     def get(self, key: str) -> str | None:
         """The value written most recently for `key`, or None."""
-        raise NotImplementedError("Chapter 2: implement get")
+        offset = self.index.get(key)
+        if offset is not None:
+            k, v = self.log.read_at(offset)
+            return v
+        return None
 
     def keys(self) -> Iterator[str]:
         """Every key that currently exists — each one once."""
-        raise NotImplementedError("Chapter 2: implement keys")
+        for k in list(self.index.keys()):
+            yield k
 
     def close(self) -> None:
-        raise NotImplementedError("Chapter 2: implement close")
+        self.log.close()
