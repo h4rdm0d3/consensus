@@ -59,5 +59,16 @@ class Store:
         """Every key that currently exists — each one once."""
         raise NotImplementedError("Chapter 2: implement keys")
 
+    # --- Chapter 3 -----------------------------------------------------------
+
+    def delete(self, key: str) -> None:
+        """Make `key` stop existing — permanently, across restarts.
+
+        You cannot remove bytes from the middle of an append-only file, so
+        absence has to be written down. Careful how you mark it: "" is a legal
+        value and has been since Chapter 1.
+        """
+        raise NotImplementedError("Chapter 3: implement delete")
+
     def close(self) -> None:
         raise NotImplementedError("Chapter 2: implement close")
