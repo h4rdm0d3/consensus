@@ -41,7 +41,7 @@ Make python/tests/test_ch02_index.py go from red to green.
 
 from collections.abc import Iterator
 
-from consensus.logfile import LogFile
+from consensus.logfile import DeletedRecordError, LogFile, RecordState
 
 
 class Store:
@@ -51,8 +51,12 @@ class Store:
         self.build_index()
 
     def build_index(self) -> None:
-        for k, _, offset in self.log.index_builder():
-            self.index[k] = offset
+        for k, _, offset, state in self.log.index_builder():
+            match state, k in self.index:
+                case RecordState.DELETED, True:
+                    del self.index[k]
+                case RecordState.PRESENT, _:
+                    self.index[k] = offset
 
     def set(self, key: str, value: str) -> None:
         offset = self.log.append(key, value)
@@ -62,14 +66,22 @@ class Store:
         """The value written most recently for `key`, or None."""
         offset = self.index.get(key)
         if offset is not None:
-            k, v = self.log.read_at(offset)
-            return v
+            try:
+                _, v = self.log.read_at(offset)
+                return v
+            except DeletedRecordError:
+                return None
         return None
 
     def keys(self) -> Iterator[str]:
         """Every key that currently exists — each one once."""
         for k in list(self.index.keys()):
             yield k
+
+    def delete(self, k: str) -> None:
+        if k in self.index:
+            del self.index[k]
+        self.log.delete(k)
 
     def close(self) -> None:
         self.log.close()

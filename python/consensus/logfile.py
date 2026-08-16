@@ -38,6 +38,7 @@ Make python/tests/test_ch01_framing.py go from red to green.
 import re
 from collections.abc import Iterator
 from contextlib import AbstractContextManager
+from enum import StrEnum, auto
 from io import BufferedReader
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,15 @@ FIXED_WIDTH_KV_PTR = 8
 HEADER_RE = re.compile(r"^kv;version=(?P<version>\d+);ksize=(?P<ksize>\d+);$")
 HEADER_REF = "kv;version=1000000;ksize=64;"
 HEADER_SIZE = len(HEADER_REF.encode("utf-8"))
+
+
+class RecordState(StrEnum):
+    PRESENT = auto()
+    DELETED = auto()
+    EOF = auto()
+
+
+class DeletedRecordError(KeyError): ...
 
 
 def to_bytes(t: Any) -> bytes:
@@ -63,18 +73,42 @@ def to_bytes(t: Any) -> bytes:
 def read_bytes(f: BufferedReader, size: int) -> bytes:
     b = f.read(size)
     if len(b) < size:
-        raise RuntimeError("Corrupted value")
+        raise RuntimeError("[Corrupted value]: Value wasn't found.")
     return b
 
 
-def read_with_header(f: BufferedReader) -> bytes | None:
+def read_key_with_header(f: BufferedReader) -> tuple[RecordState, bytes]:
+    del_mask = f.read(1)
+    record_state = RecordState.PRESENT
+    match del_mask:
+        case b"\x00":
+            pass
+        case b"\x01":
+            record_state = RecordState.DELETED
+        case b"":
+            return RecordState.EOF, b""
+        case _:
+            raise ValueError(
+                "[Corrupted record]: Invalid flag value for deletion mask."
+            )
+
     size = f.read(FIXED_WIDTH_KV_PTR)
     if not size:
-        return
+        raise RuntimeError("[Corrupted record]: Key marker missing.")
 
     if len(size) < FIXED_WIDTH_KV_PTR:
-        raise RuntimeError("Corrupted index!")
-    return read_bytes(f, int.from_bytes(size, "little"))
+        raise RuntimeError("[Corrupted record]: Key not found.")
+    return record_state, read_bytes(f, int.from_bytes(size, "little"))
+
+
+def read_val_with_header(f: BufferedReader) -> tuple[RecordState, bytes]:
+    size = f.read(FIXED_WIDTH_KV_PTR)
+    if not size:
+        raise RuntimeError("[Corrupted record]: Value marker missing.")
+
+    if len(size) < FIXED_WIDTH_KV_PTR:
+        raise RuntimeError("[Corrupted record]: Value marker wasn't found.")
+    return RecordState.PRESENT, read_bytes(f, int.from_bytes(size, "little"))
 
 
 def parse_header(hb: bytes) -> tuple[int, int]:
@@ -107,11 +141,15 @@ class LogFile(AbstractContextManager):
         self.rh = open(self.path, "rb")
         self.wh = open(self.path, "ab")
 
-    def append(self, key: str, value: str) -> int:
+    def append(self, key: str, value: str, is_delete: bool = False) -> int:
         """Append one record. Chapter 2: return the offset it was written at."""
         offset = self.wh.tell()
         key_b = to_bytes(key)
         value_b = to_bytes(value)
+        if is_delete:
+            self.wh.write(b"\x01")
+        else:
+            self.wh.write(b"\x00")
         self.wh.write(to_bytes(len(key_b)))
         self.wh.write(key_b)
         self.wh.write(to_bytes(len(value_b)))
@@ -127,30 +165,38 @@ class LogFile(AbstractContextManager):
         """
         self.wh.flush()
         self.rh.seek(offset)
-        kb = read_with_header(self.rh)
-        if kb is None:
-            raise RuntimeError("Corrupted index!")
-        vb = read_with_header(self.rh)
-        if vb is None:
-            raise RuntimeError(f"Invalid value for key={kb}")
-        return kb.decode("utf-8"), vb.decode("utf-8")
+        kstate, kb = read_key_with_header(self.rh)
+        vstate, vb = read_val_with_header(self.rh)
+        match (kstate, vstate):
+            case RecordState.DELETED, _:
+                raise DeletedRecordError(f"key={kb.decode('utf-8')} does not exist.")
+            case RecordState.PRESENT, RecordState.PRESENT:
+                return kb.decode("utf-8"), vb.decode("utf-8")
+            case _, _:
+                raise RuntimeError(
+                    "[Corrupted Index]: No value metadata was found in the record."
+                )
 
-    def scan(self) -> Iterator[tuple[str, str]]:
+    def scan(self) -> Iterator[tuple[str, str | None]]:
         """Yield every record, in the order it was written."""
         if not self.wh.closed:
             self.wh.flush()
         with open(self.path, "rb") as f:
             f.seek(HEADER_SIZE)
             while True:
-                key_b = read_with_header(f)
-                if key_b is None:
-                    return None
-                val_b = read_with_header(f)
-                if val_b is None:
-                    raise RuntimeError(f"Invalid value for key={key_b}")
-                yield key_b.decode("utf-8"), val_b.decode("utf-8")
+                kstate, kb = read_key_with_header(f)
+                if kstate == RecordState.EOF:
+                    return
+                vstate, vb = read_val_with_header(f)
+                match kstate, vstate:
+                    case RecordState.DELETED, _:
+                        yield kb.decode("utf-8"), None
+                    case RecordState.PRESENT, RecordState.PRESENT:
+                        yield kb.decode("utf-8"), vb.decode("utf-8")
+                    case _, _:
+                        continue
 
-    def index_builder(self) -> Iterator[tuple[str, str, int]]:
+    def index_builder(self) -> Iterator[tuple[str, str, int, RecordState]]:
         """Yield every record, in the order it was written."""
         if not self.wh.closed:
             self.wh.flush()
@@ -158,13 +204,25 @@ class LogFile(AbstractContextManager):
             f.seek(HEADER_SIZE)
             while True:
                 offset = f.tell()
-                key_b = read_with_header(f)
-                if key_b is None:
-                    return None
-                val_b = read_with_header(f)
-                if val_b is None:
-                    raise RuntimeError(f"Invalid value for key={key_b}")
-                yield key_b.decode("utf-8"), val_b.decode("utf-8"), offset
+                kstate, kb = read_key_with_header(f)
+                if kstate == RecordState.EOF:
+                    return
+                vstate, vb = read_val_with_header(f)
+                match kstate, vstate:
+                    case RecordState.DELETED, _:
+                        yield kb.decode("utf-8"), "", offset, RecordState.DELETED
+                    case RecordState.PRESENT, RecordState.PRESENT:
+                        yield (
+                            kb.decode("utf-8"),
+                            vb.decode("utf-8"),
+                            offset,
+                            RecordState.PRESENT,
+                        )
+                    case _, _:
+                        continue
+
+    def delete(self, k: str) -> None:
+        self.append(k, "", is_delete=True)
 
     def __exit__(self, exc_typ, exc, tb):
         self.close()
