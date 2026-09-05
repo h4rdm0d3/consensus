@@ -30,15 +30,15 @@ Every test here kills a *plausible wrong* recovery:
 
 | file | what it forces | tests |
 | --- | --- | --- |
-| `test_1_a_record_that_can_prove_itself.py` | A record that can prove itself | 2 |
-| `test_2_recover_to_a_valid_prefix.py` | Recover to a valid prefix | 4 |
+| `test_1_record_proves_itself.py` | A record that can prove itself | 2 |
+| `test_2_recover_to_valid_prefix.py` | Recover to a valid prefix | 4 |
 | `test_3_acknowledged_means_durable.py` | Acknowledged means durable | 1 |
-| `test_4_the_header_is_data_too.py` | The header is data too | 3 |
+| `test_4_header_is_data_too.py` | The header is data too | 3 |
 
 ## Running it
 
 ```
-pytest tests/ch5/test_1_a_record_that_can_prove_itself.py   # one segment
-pytest tests/ch5                                            # the whole chapter
-pytest                                                      # everything you have built so far
+pytest tests/ch5/test_1_record_proves_itself.py   # one segment
+pytest tests/ch5                                  # the whole chapter
+pytest                                            # everything you have built so far
 ```

@@ -1,4 +1,4 @@
-"""A record that reads back."""
+"""Record reads back."""
 
 from consensus.logfile import LogFile
 
@@ -9,7 +9,7 @@ def test_single_record_roundtrips(path):
     assert roundtrip(path, [("k", "v")]) == [("k", "v")]
 
 
-def test_scan_on_a_fresh_file_is_empty(path):
+def test_scan_on_fresh_file_is_empty(path):
     assert list(LogFile(path).scan()) == []
 
 

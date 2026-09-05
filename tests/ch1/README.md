@@ -21,15 +21,15 @@ Every test here kills a *plausible wrong* format, not just an empty one:
 
 | file | what it forces | tests |
 | --- | --- | --- |
-| `test_1_a_record_that_reads_back.py` | A record that reads back | 3 |
+| `test_1_record_reads_back.py` | Record reads back | 3 |
 | `test_2_payloads_that_break_your_framing.py` | Payloads that break your framing | 4 |
-| `test_3_the_log_only_ever_grows.py` | The log only ever grows | 3 |
-| `test_4_a_format_you_did_not_write.py` | A format you did not write | 1 |
+| `test_3_log_only_grows.py` | The log only grows | 3 |
+| `test_4_format_you_did_not_write.py` | A format you did not write | 1 |
 
 ## Running it
 
 ```
-pytest tests/ch1/test_1_a_record_that_reads_back.py   # one segment
-pytest tests/ch1                                      # the whole chapter
-pytest                                                # everything you have built so far
+pytest tests/ch1/test_1_record_reads_back.py   # one segment
+pytest tests/ch1                               # the whole chapter
+pytest                                         # everything you have built so far
 ```

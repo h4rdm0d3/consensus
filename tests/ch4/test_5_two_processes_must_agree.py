@@ -7,7 +7,7 @@ import sys
 from ch4_helpers import _PKG_ROOT, build, hash_of
 
 
-def test_hash_does_not_depend_on_the_process(tmp_path):
+def test_hash_does_not_depend_on_process(tmp_path):
     # PYTHONHASHSEED randomises str hashing and set iteration per process. A
     # fingerprint that depends on it cannot compare two machines. That is
     # the only thing a fingerprint is for.

@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch2_helpers import CountingLog
 
 
-def test_get_does_not_walk_the_log(path):
+def test_get_does_not_walk_log(path):
     # the whole point: lookup cost must not grow with the size of the log.
     log = CountingLog(LogFile(path))
     s = Store(log)
@@ -47,7 +47,7 @@ def test_missing_key_touches_no_records(path):
     assert log.scans == before_scans, "a miss should not walk the log"
 
 
-def test_recovery_walks_the_log_once(path):
+def test_recovery_walks_log_once(path):
     s = Store(LogFile(path))
     for i in range(100):
         s.set(f"k{i}", str(i))

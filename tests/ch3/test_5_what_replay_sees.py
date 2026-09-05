@@ -26,7 +26,7 @@ def test_delete_appends_and_never_rewrites(path):
     assert len(after) > len(before), "delete wrote nothing. Absence must be recorded"
 
 
-def test_a_deleted_key_costs_no_record_read(path):
+def test_deleted_key_costs_no_record_read(path):
     # a deleted key is a miss, and a miss reads nothing (Chapter 2's rule).
     log = CountingLog(LogFile(path))
     s = Store(log)
@@ -82,7 +82,7 @@ def test_scan_records_what_actually_happened(tmp_path):
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
 
 
-def test_matches_a_plain_dict_across_restarts(path, seed):
+def test_matches_plain_dict_across_restarts(path, seed):
     # the store, restarted at random moments, must agree with a dict that was
     # never written to disk at all.
     rng = random.Random(seed)

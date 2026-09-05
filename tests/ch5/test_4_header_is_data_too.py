@@ -10,7 +10,7 @@ from consensus.store import Store
 from ch5_helpers import build
 
 
-def test_a_damaged_header_never_destroys_the_log(tmp_path):
+def test_damaged_header_never_destroys_log(tmp_path):
     # Every record in the log is intact and individually checksummed. A single
     # bad byte in the 12-byte header must not cost you any of them: refusing to
     # open is a correct answer, deleting the file is not.
@@ -61,7 +61,7 @@ def test_every_header_byte_is_covered_by_its_checksum(tmp_path):
     )
 
 
-def test_a_format_version_from_the_future_is_refused(tmp_path):
+def test_format_version_from_future_is_refused(tmp_path):
     # The version field exists so an older build refuses a newer format instead
     # of misreading it. A log written as v99 must not be opened by this build.
     p = str(tmp_path / "v99.log")

@@ -1,15 +1,15 @@
-"""The fingerprint sees state, not history."""
+"""The fingerprint is history agnostic."""
 
 from ch4_helpers import hash_of
 
 
-def test_insertion_order_does_not_reach_the_hash(tmp_path):
+def test_insertion_order_does_not_reach_hash(tmp_path):
     a = hash_of(tmp_path, "a.log", [("set", "x", "1"), ("set", "y", "2")])
     b = hash_of(tmp_path, "b.log", [("set", "y", "2"), ("set", "x", "1")])
     assert a == b, "the order keys were first written leaked into the hash"
 
 
-def test_history_does_not_reach_the_hash(tmp_path):
+def test_history_does_not_reach_hash(tmp_path):
     # same final state, three different paths to it. A fingerprint that hashes
     # the index hashes offsets, and offsets are a fact about history.
     end = [("set", "a", "1"), ("set", "b", "2")]

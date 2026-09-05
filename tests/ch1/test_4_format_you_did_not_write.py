@@ -3,7 +3,7 @@
 from ch1_helpers import roundtrip
 
 
-def test_the_mystery_log_case(path):
+def test_mystery_log_case(path):
     # the exact records fixtures/mystery.log was built from. Concatenating
     # key+value with no boundary makes these unrecoverable. Your format must
     # recover them exactly.

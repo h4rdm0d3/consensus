@@ -24,15 +24,15 @@ Every test here kills a *plausible wrong* store, not just an empty one:
 
 | file | what it forces | tests |
 | --- | --- | --- |
-| `test_1_the_latest_write_wins.py` | The latest write wins | 4 |
+| `test_1_latest_write_wins.py` | Latest write wins | 4 |
 | `test_2_keys_not_records.py` | Keys, not records | 1 |
-| `test_3_the_log_is_the_truth_the_index_is_a_view.py` | The log is the truth, the index is a view | 4 |
-| `test_4_lookup_must_not_walk_the_log.py` | Lookup must not walk the log | 4 |
+| `test_3_log_is_truth_index_is_view.py` | The log is truth, the index is a view | 4 |
+| `test_4_lookup_must_not_walk_log.py` | Lookup must not walk the log | 4 |
 
 ## Running it
 
 ```
-pytest tests/ch2/test_1_the_latest_write_wins.py   # one segment
-pytest tests/ch2                                   # the whole chapter
-pytest                                             # everything you have built so far
+pytest tests/ch2/test_1_latest_write_wins.py   # one segment
+pytest tests/ch2                               # the whole chapter
+pytest                                         # everything you have built so far
 ```

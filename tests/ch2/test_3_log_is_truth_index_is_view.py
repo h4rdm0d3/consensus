@@ -1,4 +1,4 @@
-"""The log is the truth, the index is a view."""
+"""The log is truth, the index is a view."""
 
 from consensus.logfile import LogFile
 from consensus.store import Store
@@ -16,7 +16,7 @@ def test_reopening_recovers_every_key(path):
     assert sorted(s2.keys()) == ["a", "b"]
 
 
-def test_reopening_recovers_the_latest_version(path):
+def test_reopening_recovers_latest_version(path):
     # the rebuild must respect log order: later records overwrite earlier ones.
     s = Store(LogFile(path))
     s.set("k", "old")

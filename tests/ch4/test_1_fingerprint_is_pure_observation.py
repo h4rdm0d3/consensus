@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch4_helpers import hash_of
 
 
-def test_hash_is_a_pure_observation(path):
+def test_hash_is_pure_observation(path):
     s = Store(LogFile(path))
     s.set("a", "1")
     assert s.state_hash() == s.state_hash(), "reading the hash changed it"
@@ -18,7 +18,7 @@ def test_empty_store_is_stable(tmp_path):
     assert a == b
 
 
-def test_hash_survives_a_restart(path):
+def test_hash_survives_restart(path):
     # the reason this chapter exists: prove recovery rebuilt the same state.
     s = Store(LogFile(path))
     for i in range(50):
