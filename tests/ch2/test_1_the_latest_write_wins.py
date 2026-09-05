@@ -8,7 +8,7 @@ def test_get_returns_the_most_recent_value(path):
     s = Store(LogFile(path))
     s.set("k", "1")
     s.set("k", "2")
-    assert s.get("k") == "2", "returned a stale version — later records win"
+    assert s.get("k") == "2", "returned a stale version. Later records win"
 
 
 def test_get_absent_key_is_none(path):

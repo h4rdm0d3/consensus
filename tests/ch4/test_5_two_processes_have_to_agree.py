@@ -9,8 +9,8 @@ from ch4_helpers import _PKG_ROOT, build, hash_of
 
 def test_hash_does_not_depend_on_the_process(tmp_path):
     # PYTHONHASHSEED randomises str hashing and set iteration per process. A
-    # fingerprint that depends on it cannot compare two machines — which is the
-    # only thing a fingerprint is for.
+    # fingerprint that depends on it cannot compare two machines. That is
+    # the only thing a fingerprint is for.
     ops = [["set", "a", "1"], ["set", "b", "2"], ["del", "a"], ["set", "c", "3"]]
     p = str(tmp_path / "seed.log")
     build(p, [tuple(o) for o in ops])
@@ -31,7 +31,7 @@ def test_hash_does_not_depend_on_the_process(tmp_path):
         return r.stdout.strip()
 
     assert run(0) == run(1), (
-        "the hash changes with PYTHONHASHSEED — you are hashing an unordered "
+        "the hash changes with PYTHONHASHSEED. You are hashing an unordered "
         "iteration, or calling hash()"
     )
 

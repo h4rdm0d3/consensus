@@ -7,7 +7,7 @@ from ch5_helpers import assert_is_a_prefix, build
 
 
 def test_a_flipped_byte_in_the_last_record_is_detected(tmp_path):
-    # structure survives a bit flip: lengths still parse, the record still
+    # structure survives a flipped bit: lengths still parse, the record still
     # "decodes". Only something that ties the bytes together can catch it.
     p = build(str(tmp_path / "f.log"))
     data = bytearray(open(p, "rb").read())

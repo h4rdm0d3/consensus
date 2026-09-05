@@ -22,7 +22,7 @@ def test_delete_survives_restart(path):
     s.close()
 
     assert reopen(path).get("k") is None, (
-        "the deleted key came back — absence was never written down"
+        "the deleted key came back. Absence was never written down"
     )
 
 

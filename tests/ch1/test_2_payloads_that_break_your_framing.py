@@ -19,17 +19,17 @@ def test_payload_may_contain_any_delimiter_you_picked(tmp_path, sep):
     p = str(tmp_path / f"sep_{ord(sep)}.log")
     records = [("k" + sep + "1", sep), (sep * 3, "v" + sep)]
     assert roundtrip(p, records) == records, (
-        f"format breaks when the payload contains {sep!r} — "
-        "a delimiter made of legal payload bytes is not a boundary"
+        f"format breaks when the payload contains {sep!r}. "
+        "A delimiter made of legal payload bytes is not a boundary"
     )
 
 
 def test_multibyte_payloads(path):
-    # "é" is 1 character but 2 UTF-8 bytes; "😀" is 1 character but 4 bytes.
+    # "é" is 1 character but 2 UTF-8 bytes. "😀" is 1 character but 4 bytes.
     # A length that counts characters will not match the bytes it frames.
     records = [("é", "😀"), ("日本語", "aé😀"), ("😀" * 5, "é" * 9)]
     assert roundtrip(path, records) == records, (
-        "multibyte broke the framing — are you counting characters where you "
+        "multibyte broke the framing. Are you counting characters where you "
         "should count bytes?"
     )
 

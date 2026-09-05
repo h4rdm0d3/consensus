@@ -2,17 +2,20 @@
 
 *easy · single process, seeded faults, everything reproducible*
 
-Oracle for Chapter 1 · Easy — record framing on disk.
+Oracle for Chapter 1 · Easy: record framing on disk.
 
 Contract:
     LogFile(path).append(key, value)     appends one record, never rewrites
     LogFile(path).scan()  -> Iterator[(key, value)] in write order
 
 Every test here kills a *plausible wrong* format, not just an empty one:
-    - key+value concatenated        -> roundtrip garbage (the mystery.log bug)
-    - a delimiter byte (, : \n \0)  -> dies when the payload contains it
-    - a character-count length      -> dies on multibyte (chars != bytes)
-    - rewriting the file each time  -> dies on the append-only check
+
+```
+- key+value concatenated        -> roundtrip garbage (the mystery.log bug)
+- a delimiter byte (, : \n \0)  -> dies when the payload contains it
+- a character-count length      -> dies on multibyte (chars != bytes)
+- rewriting the file each time  -> dies on the append-only check
+```
 
 ## Segments
 

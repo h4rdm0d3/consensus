@@ -1,4 +1,4 @@
-"""Chapter 1 · Easy — records on disk that can be read back.
+"""Chapter 1 · Easy: records on disk that can be read back.
 
 The situation:
     A key-value store must survive restart, so every write is appended to a
@@ -13,7 +13,7 @@ Your job:
     the writer and the reader.
 
 You may not:
-    - use a serialization library that hides the boundary for you — no json,
+    - use a serialization library that hides the boundary for you. No json,
       pickle, msgpack, protobuf, csv. You emit the bytes.
     - assume any byte or character cannot appear in a key or a value. Keys and
       values are arbitrary strings: empty, newlines, NULs, commas, quotes,
@@ -28,7 +28,7 @@ You may assume:
 
 The API:
     log = LogFile(path)
-    log.append("k", "v")          # durable-ish; appends one record
+    log.append("k", "v")          # durable-ish, appends one record
     list(log.scan())              # -> [("k", "v"), ...] in write order
     log.close()
 
