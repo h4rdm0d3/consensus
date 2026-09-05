@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch5_helpers import assert_is_a_prefix, build
 
 
-def test_a_flipped_byte_in_the_last_record_is_detected(tmp_path):
+def test_flipped_byte_in_last_record_is_detected(tmp_path):
     # structure survives a flipped bit: lengths still parse, the record still
     # "decodes". Only something that ties the bytes together can catch it.
     p = build(str(tmp_path / "f.log"))
@@ -20,7 +20,7 @@ def test_a_flipped_byte_in_the_last_record_is_detected(tmp_path):
     assert_is_a_prefix(store)
 
 
-def test_a_zero_filled_tail_is_not_data(tmp_path):
+def test_zero_filled_tail_is_not_data(tmp_path):
     # crashed filesystems leave zeros. On this format they parse as a legal
     # empty record, so structure alone cannot reject them.
     p = build(str(tmp_path / "z.log"))

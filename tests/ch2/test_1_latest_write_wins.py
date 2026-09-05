@@ -1,10 +1,10 @@
-"""The latest write wins."""
+"""Latest write wins."""
 
 from consensus.logfile import LogFile
 from consensus.store import Store
 
 
-def test_get_returns_the_most_recent_value(path):
+def test_get_returns_most_recent_value(path):
     s = Store(LogFile(path))
     s.set("k", "1")
     s.set("k", "2")

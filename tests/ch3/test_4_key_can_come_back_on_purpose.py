@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch3_helpers import reopen
 
 
-def test_set_after_delete_resurrects_the_key(path):
+def test_set_after_delete_resurrects_key(path):
     s = Store(LogFile(path))
     s.set("k", "1")
     s.delete("k")

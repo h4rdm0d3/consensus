@@ -30,16 +30,16 @@ Every test here kills a *plausible wrong* fingerprint:
 
 | file | what it forces | tests |
 | --- | --- | --- |
-| `test_1_a_fingerprint_is_a_pure_observation.py` | A fingerprint is a pure observation | 3 |
-| `test_2_the_fingerprint_sees_state_not_history.py` | The fingerprint sees state, not history | 2 |
+| `test_1_fingerprint_is_pure_observation.py` | A fingerprint is a pure observation | 3 |
+| `test_2_fingerprint_history_agnostic.py` | The fingerprint is history agnostic | 2 |
 | `test_3_different_states_different_fingerprints.py` | Different states, different fingerprints | 4 |
-| `test_4_framing_again_now_inside_the_hash.py` | Framing again, now inside the hash | 1 |
+| `test_4_framing_inside_hash.py` | Framing again, inside the hash | 1 |
 | `test_5_two_processes_must_agree.py` | Two processes must agree | 2 |
 
 ## Running it
 
 ```
-pytest tests/ch4/test_1_a_fingerprint_is_a_pure_observation.py   # one segment
-pytest tests/ch4                                                 # the whole chapter
-pytest                                                           # everything you have built so far
+pytest tests/ch4/test_1_fingerprint_is_pure_observation.py   # one segment
+pytest tests/ch4                                             # the whole chapter
+pytest                                                       # everything you have built so far
 ```

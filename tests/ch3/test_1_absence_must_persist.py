@@ -1,4 +1,4 @@
-"""Absence must be written down."""
+"""Absence must persist."""
 
 from consensus.logfile import LogFile
 from consensus.store import Store
@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch3_helpers import reopen
 
 
-def test_delete_removes_the_key(path):
+def test_delete_removes_key(path):
     s = Store(LogFile(path))
     s.set("k", "v")
     s.delete("k")

@@ -8,7 +8,7 @@ from consensus.store import Store
 from ch5_helpers import assert_is_a_prefix, build
 
 
-def test_truncation_at_every_offset_recovers_a_prefix(tmp_path):
+def test_truncation_at_every_offset_recovers_prefix(tmp_path):
     # a crash can cut the file at any byte. Every one of them must open.
     src = build(str(tmp_path / "src.log"))
     whole = open(src, "rb").read()
@@ -28,7 +28,7 @@ def test_truncation_at_every_offset_recovers_a_prefix(tmp_path):
         store.close()
 
 
-def test_a_garbage_tail_does_not_corrupt_the_prefix(tmp_path):
+def test_garbage_tail_does_not_corrupt_prefix(tmp_path):
     p = build(str(tmp_path / "g.log"))
     before = Store(LogFile(p)).state_hash()
 
@@ -51,7 +51,7 @@ def test_recovery_is_idempotent(tmp_path):
     assert a == b, "opening the same damaged log twice gave two different states"
 
 
-def test_writing_after_recovering_from_a_torn_tail(tmp_path):
+def test_writing_after_recovering_from_torn_tail(tmp_path):
     # recovery must leave the log in a state you can append to. If the torn
     # bytes are still there, the next record is written after garbage and the
     # log is permanently unreadable past that point.

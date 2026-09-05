@@ -6,7 +6,7 @@ from consensus.store import Store
 from ch3_helpers import reopen
 
 
-def test_empty_value_is_not_a_deletion(path):
+def test_empty_value_is_not_deletion(path):
     # "" is a legal value and has been since Chapter 1. A tombstone marked by
     # an empty value cannot tell them apart.
     s = Store(LogFile(path))
@@ -18,7 +18,7 @@ def test_empty_value_is_not_a_deletion(path):
     assert sorted(s2.keys()) == ["k"]
 
 
-def test_empty_value_written_after_a_delete(path):
+def test_empty_value_written_after_delete(path):
     s = Store(LogFile(path))
     s.set("k", "v")
     s.delete("k")

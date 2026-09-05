@@ -1,4 +1,4 @@
-"""The log only ever grows."""
+"""The log only grows."""
 
 from consensus.logfile import LogFile
 
@@ -20,7 +20,7 @@ def test_append_never_rewrites_earlier_bytes(path):
     assert len(after) > len(prefix)
 
 
-def test_scan_does_not_consume_the_log(path):
+def test_scan_does_not_consume_log(path):
     # scanning is a read: doing it twice gives the same answer.
     log = LogFile(path)
     log.append("k", "v")
