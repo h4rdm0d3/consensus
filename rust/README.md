@@ -1,8 +1,12 @@
-# Rust tier (Hard + Impossible)
+# Rust tier (Impossible)
 
-Arrives at **Chapter 1 · Hard**. The Python build in `../python` is the
-deterministic intuition; this is the same system under real processes, sockets,
-`fsync`, and `kill -9` — then squeezed for performance until every microsecond
-is accounted for, with the safety invariants as the gate.
+Arrives at **Chapter 7**, and only after measurement. The Python build in
+`../python` is the reference implementation and stays complete and readable
+forever. This directory holds one crate per hot path that profiling proved
+needed one, behind an identical API, benchmarked A/B against the pure-Python
+path in the same process.
+
+A chapter that concludes "this did not need Rust" is a better chapter than one
+that cargo-cults a rewrite.
 
 Nothing here yet.
