@@ -1,10 +1,11 @@
 """Acknowledged means durable."""
 
 import os
-import pytest
 import subprocess
 import sys
 import time
+
+import pytest
 
 from consensus.logfile import HEADER_SIZE, LogFile
 from consensus.store import Store

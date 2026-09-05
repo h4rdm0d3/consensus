@@ -1,6 +1,7 @@
 """The header is data too."""
 
 import os
+
 import pytest
 
 from consensus.logfile import HEADER_SIZE, LogFile
