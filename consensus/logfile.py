@@ -32,7 +32,7 @@ The API:
     list(log.scan())              # -> [("k", "v"), ...] in write order
     log.close()
 
-Make python/tests/test_ch01_framing.py go from red to green.
+Make the tests in tests/ch1/ go from red to green.
 """
 
 import os
