@@ -34,7 +34,7 @@ Every test here kills a *plausible wrong* fingerprint:
 | `test_2_the_fingerprint_sees_state_not_history.py` | The fingerprint sees state, not history | 2 |
 | `test_3_different_states_different_fingerprints.py` | Different states, different fingerprints | 4 |
 | `test_4_framing_again_now_inside_the_hash.py` | Framing again, now inside the hash | 1 |
-| `test_5_two_processes_have_to_agree.py` | Two processes have to agree | 2 |
+| `test_5_two_processes_must_agree.py` | Two processes must agree | 2 |
 
 ## Running it
 

@@ -1,4 +1,4 @@
-"""Two processes have to agree."""
+"""Two processes must agree."""
 
 import os
 import subprocess
