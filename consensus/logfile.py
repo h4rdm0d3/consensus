@@ -1,7 +1,7 @@
 """Chapter 1 · Easy: records on disk that can be read back.
 
 The situation:
-    A key-value store has to survive a restart. So it appends every write to a
+    A key-value store must survive restarts. So it appends every write to a
     file. The previous version wrote each record as the key's bytes followed by
     the value's bytes, and nothing else.
 
