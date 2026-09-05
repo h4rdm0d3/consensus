@@ -2,26 +2,29 @@
 
 *easy · single process, seeded faults, everything reproducible*
 
-Oracle for Chapter 4 · Easy — proving recovery reproduced the state.
+Oracle for Chapter 4 · Easy: proving recovery reproduced the state.
 
 Contract added this chapter:
     Store(log).state_hash() -> str
 
 A fingerprint of the store's *logical state*: the set of live keys and their
-current values. Nothing else may reach it — not the history that produced the
+current values. Nothing else may reach it: not the history that produced the
 state, not where records happen to sit in the file, not the order keys were
 first written, not which process is asking.
 
-Note the contrast with scan(), which Chapter 3 required to be injective over
+Note the contrast with scan(). Chapter 3 required that to be injective over
 *histories*. This is the opposite job: two different histories that arrive at
 the same state MUST produce the same hash, or the fingerprint cannot be used to
 answer "do these two stores agree?"
 
 Every test here kills a *plausible wrong* fingerprint:
-    - hashing the index (offsets)      -> history leaks in
-    - hashing in dict order            -> insertion order leaks in
-    - key + value with no framing      -> distinct states collide
-    - hash() or set iteration          -> the process's hash seed leaks in
+
+```
+- hashing the index (offsets)      -> history leaks in
+- hashing in dict order            -> insertion order leaks in
+- key + value with no framing      -> distinct states collide
+- hash() or set iteration          -> the process's hash seed leaks in
+```
 
 ## Segments
 

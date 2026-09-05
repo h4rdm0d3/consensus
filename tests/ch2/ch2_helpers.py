@@ -28,7 +28,7 @@ class CountingLog:
         self._log.close()
 
     def __getattr__(self, name):
-        # anything else is proxied straight through; walks of the whole log
+        # anything else is proxied straight through. Walks of the whole log
         # are counted whatever you decided to call them.
         attr = getattr(self._log, name)
         if name.startswith("scan"):

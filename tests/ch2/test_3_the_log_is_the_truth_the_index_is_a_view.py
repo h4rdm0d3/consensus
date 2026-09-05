@@ -24,7 +24,7 @@ def test_reopening_recovers_the_latest_version(path):
     s.close()
 
     assert Store(LogFile(path)).get("k") == "new", (
-        "rebuild kept the earlier record — order is what decides the current value"
+        "rebuild kept the earlier record. Order is what decides the current value"
     )
 
 
@@ -41,7 +41,7 @@ def test_writes_survive_across_several_sessions(path):
 
 
 def test_history_is_never_destroyed(path):
-    # the store updates a key; the log still holds every version ever written.
+    # the store updates a key. The log still holds every version ever written.
     s = Store(LogFile(path))
     s.set("k", "1")
     s.set("k", "2")
@@ -49,5 +49,5 @@ def test_history_is_never_destroyed(path):
     s.close()
 
     assert list(LogFile(path).scan()) == [("k", "1"), ("k", "2"), ("k", "3")], (
-        "the log lost history — the store must append, never rewrite"
+        "the log lost history. The store must append, never rewrite"
     )

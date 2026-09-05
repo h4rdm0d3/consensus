@@ -2,13 +2,13 @@
 
 *hard · real sockets, real fsync, real kill -9*
 
-Oracle for Chapter 5 · Hard — surviving a crash mid-write.
+Oracle for Chapter 5 · Hard: surviving a crash mid-write.
 
 Two contracts, both new:
 
   RECOVERY IS TOTAL.  Opening a log whose tail is damaged must succeed and
-  yield a valid prefix — every record up to the last complete, intact one, and
-  nothing after it. Damage at the end of a log is normal; it is what a crash
+  yield a valid prefix: every record up to the last complete, intact one, and
+  nothing after it. Damage at the end of a log is normal. It is what a crash
   looks like. A store that refuses to open is a store you have lost.
 
   DEBRIS IS NOT DATA.  A partial record, a zero-filled tail, or a flipped byte
@@ -19,9 +19,12 @@ Two contracts, both new:
   AND THE OLD ONE STILL HOLDS.  Anything acknowledged survives.
 
 Every test here kills a *plausible wrong* recovery:
-    - raising on a torn tail        -> the store cannot be opened at all
-    - trusting structure alone      -> zeros become a key
-    - recovering but not truncating -> the next append extends the garbage
+
+```
+- raising on a torn tail        -> the store cannot be opened at all
+- trusting structure alone      -> zeros become a key
+- recovering but not truncating -> the next append extends the garbage
+```
 
 ## Segments
 

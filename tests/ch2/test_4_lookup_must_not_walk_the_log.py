@@ -17,7 +17,7 @@ def test_get_does_not_walk_the_log(path):
     for i in range(500):
         assert s.get(f"k{i}") == str(i)
     assert log.scans == before, (
-        f"get() walked the log {log.scans - before} times — that is O(n) per lookup"
+        f"get() walked the log {log.scans - before} times. That is O(n) per lookup"
     )
 
 
@@ -31,8 +31,8 @@ def test_get_reads_exactly_one_record_from_disk(path):
     before = log.reads
     assert s.get("a") == "1"
     assert log.reads == before + 1, (
-        f"get() performed {log.reads - before} record reads; expected exactly 1 "
-        "(0 means the value was cached in memory — values must stay on disk)"
+        f"get() performed {log.reads - before} record reads. Expected exactly 1 "
+        "(0 means the value was cached in memory. Values must stay on disk)"
     )
 
 
@@ -56,6 +56,6 @@ def test_recovery_walks_the_log_once(path):
     log = CountingLog(LogFile(path))
     s2 = Store(log)
     assert log.scans <= 1, (
-        f"recovery walked the log {log.scans} times; once is enough"
+        f"recovery walked the log {log.scans} times. Once is enough"
     )
     assert s2.get("k42") == "42"

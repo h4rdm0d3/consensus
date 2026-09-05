@@ -15,7 +15,7 @@ def test_set_after_delete_resurrects_the_key(path):
     s.close()
 
     s2 = reopen(path)
-    assert s2.get("k") == "2", "rebuild ignored record order — the tombstone won"
+    assert s2.get("k") == "2", "rebuild ignored record order. The tombstone won"
     assert sorted(s2.keys()) == ["k"]
 
 

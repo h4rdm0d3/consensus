@@ -23,7 +23,7 @@ def test_delete_appends_and_never_rewrites(path):
     after = open(path, "rb").read()
 
     assert after[: len(before)] == before, "delete rewrote bytes already on disk"
-    assert len(after) > len(before), "delete wrote nothing — absence must be recorded"
+    assert len(after) > len(before), "delete wrote nothing. Absence must be recorded"
 
 
 def test_a_deleted_key_costs_no_record_read(path):
@@ -40,7 +40,7 @@ def test_a_deleted_key_costs_no_record_read(path):
 
 
 def test_scan_records_what_actually_happened(tmp_path):
-    # scan() is a history view — Chapter 2 fixed that: every version a key ever
+    # scan() is a history view. Chapter 2 fixed that: every version a key ever
     # had is reported, in order. So it must be injective over histories: three
     # logs that differ must render differently. Anything that rebuilds a log
     # from scan() (compaction, replication, backup) depends on this.
@@ -69,12 +69,12 @@ def test_scan_records_what_actually_happened(tmp_path):
 
     sa, sb, sc = (list(LogFile(p).scan()) for p in (pa, pb, pc))
     assert sa != sb, (
-        "scan() renders a tombstone the same as an empty-string write — the "
+        "scan() renders a tombstone the same as an empty-string write. The "
         "record kind survives on disk but is discarded at the API"
     )
     assert sa != sc, (
         "scan() omits the tombstone, so a deleted key is indistinguishable "
-        "from one that was never deleted — a compactor would resurrect it"
+        "from one that was never deleted. A compactor would resurrect it"
     )
     assert sb != sc
 

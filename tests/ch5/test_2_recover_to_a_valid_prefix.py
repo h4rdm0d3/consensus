@@ -67,7 +67,7 @@ def test_writing_after_recovering_from_a_torn_tail(tmp_path):
 
     reopened = Store(LogFile(p))
     assert reopened.get("after") == "recovery", (
-        "a write made after recovery did not survive — the torn tail was never "
+        "a write made after recovery did not survive. The torn tail was never "
         "cleared, so the new record sits behind garbage"
     )
     assert sorted(reopened.keys()) == sorted(recovered + ["after"])

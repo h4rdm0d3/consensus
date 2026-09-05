@@ -27,12 +27,12 @@ def test_a_damaged_header_never_destroys_the_log(tmp_path):
         try:
             Store(LogFile(p))
         except Exception:
-            pass                       # refusing is fine; destroying is not
+            pass                       # refusing is fine, destroying is not
 
         after = open(p, "rb").read()
         assert len(after) >= len(original), (
             f"corrupting header byte {pos} shrank the log from {len(original)} "
-            f"to {len(after)} bytes — every record in it was intact"
+            f"to {len(after)} bytes. Every record in it was intact"
         )
         assert after[HEADER_SIZE:] == original[HEADER_SIZE:], (
             f"corrupting header byte {pos} altered the records after the header"
@@ -56,8 +56,8 @@ def test_every_header_byte_is_covered_by_its_checksum(tmp_path):
         except Exception:
             pass
     assert not missed, (
-        f"header bytes {missed} can be corrupted without being detected — "
-        "they are outside what the header checksum covers"
+        f"header bytes {missed} can be corrupted without being detected. "
+        "They are outside what the header checksum covers"
     )
 
 

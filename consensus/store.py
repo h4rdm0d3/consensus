@@ -1,8 +1,8 @@
-"""Chapter 2 · Easy — two values for the same key.
+"""Chapter 2 · Easy: two values for the same key.
 
 The situation:
-    Your log works. You set k=1. Later you set k=2. Both records are on disk —
-    the second append did not overwrite the first, because nothing in an
+    Your log works. You set k=1. Later you set k=2. Both records are on disk.
+    The second append did not overwrite the first, because nothing in an
     append-only file ever overwrites anything.
 
     Someone asks for k. Answer them.
@@ -16,15 +16,15 @@ Your job:
 
 You may not:
     - sort, rewrite, or move anything already in the log. Still append-only.
-    - keep values in memory. The store must hold more data than fits in RAM;
-      whatever you remember about a key must be small and fixed-size.
+    - keep values in memory. The store must hold more data than fits in RAM.
+      Whatever you remember about a key must be small and fixed-size.
     - read records you did not need. A lookup touches one record.
     - lose history. Every version ever written stays in the log.
 
 You may assume:
     - one process, clean shutdown, no crashes yet.
     - the set of keys is small enough to fit in memory, even though the values
-      are not. (This is a real engineering assumption with a real cost — the
+      are not. (This is a real engineering assumption with a real cost. The
       debrief will name what it buys and what it forbids.)
 
 The API:
@@ -56,13 +56,13 @@ class Store:
         raise NotImplementedError("Chapter 2: implement get")
 
     def keys(self) -> Iterator[str]:
-        """Every key that currently exists — each one once."""
+        """Every key that currently exists, once each."""
         raise NotImplementedError("Chapter 2: implement keys")
 
     # --- Chapter 3 -----------------------------------------------------------
 
     def delete(self, key: str) -> None:
-        """Make `key` stop existing — permanently, across restarts.
+        """Make `key` stop existing, permanently and across restarts.
 
         You cannot remove bytes from the middle of an append-only file, so
         absence has to be written down. Careful how you mark it: "" is a legal
@@ -75,11 +75,11 @@ class Store:
     def state_hash(self) -> str:
         """A fingerprint of the store's logical state.
 
-        Live keys and their current values, and nothing else — not the history
+        Live keys and their current values, and nothing else: not the history
         that produced them, not where records sit in the file, not the order
         keys were first written, not which process is asking.
 
-        Note the contrast with scan(), which Chapter 3 required to be injective
+        Note the contrast with scan(). Chapter 3 required that to be injective
         over histories. This is the opposite job: two stores that arrived at the
         same state by different routes must agree.
         """
