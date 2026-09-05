@@ -10,6 +10,31 @@ Every test here kills a *plausible wrong* format, not just an empty one:
     - a character-count length      -> dies on multibyte (chars != bytes)
     - rewriting the file each time  -> dies on the append-only check
 """
+
+TITLE = "The file won't read back"
+TIER = "easy · single process, seeded faults, everything reproducible"
+
+BEATS = {
+    "1.1": ("A record that reads back", [
+        "test_single_record_roundtrips",
+        "test_scan_on_a_fresh_file_is_empty",
+        "test_many_records_keep_write_order",
+    ]),
+    "1.2": ("Payloads that break your framing", [
+        "test_empty_key_and_empty_value",
+        "test_payload_may_contain_any_delimiter_you_picked",
+        "test_multibyte_payloads",
+        "test_adversarial_payloads_roundtrip",
+    ]),
+    "1.3": ("The log only ever grows", [
+        "test_append_never_rewrites_earlier_bytes",
+        "test_scan_does_not_consume_the_log",
+        "test_reopening_recovers_everything",
+    ]),
+    "1.4": ("A format you did not write", [
+        "test_the_mystery_log_case",
+    ]),
+}
 import os
 import random
 

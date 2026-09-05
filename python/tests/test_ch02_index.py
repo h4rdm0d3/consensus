@@ -13,6 +13,33 @@ Every test here kills a *plausible wrong* store, not just an empty one:
     - a rebuild that keeps the earlier record -> caught after reopen
     - keys() built from raw records          -> duplicates
 """
+
+TITLE = "Two values for the same key"
+TIER = "easy · single process, seeded faults, everything reproducible"
+
+BEATS = {
+    "2.1": ("The latest write wins", [
+        "test_get_returns_the_most_recent_value",
+        "test_get_absent_key_is_none",
+        "test_stored_empty_string_is_not_absence",
+        "test_many_updates_to_one_key",
+    ]),
+    "2.2": ("Keys, not records", [
+        "test_keys_lists_each_key_once",
+    ]),
+    "2.3": ("The log is the truth, the index is a view", [
+        "test_reopening_recovers_every_key",
+        "test_reopening_recovers_the_latest_version",
+        "test_writes_survive_across_several_sessions",
+        "test_history_is_never_destroyed",
+    ]),
+    "2.4": ("Lookup must not walk the log", [
+        "test_get_does_not_walk_the_log",
+        "test_get_reads_exactly_one_record_from_disk",
+        "test_missing_key_touches_no_records",
+        "test_recovery_walks_the_log_once",
+    ]),
+}
 import pytest
 
 from consensus.logfile import LogFile

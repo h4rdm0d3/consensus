@@ -12,6 +12,35 @@ Every test here kills a *plausible wrong* delete, not just an empty one:
     - rewriting or truncating the log                -> history destroyed
     - a rebuild that ignores record order            -> resurrection
 """
+
+TITLE = "The deleted key came back"
+TIER = "easy · single process, seeded faults, everything reproducible"
+
+BEATS = {
+    "3.1": ("Absence has to be written down", [
+        "test_delete_removes_the_key",
+        "test_delete_survives_restart",
+        "test_deleted_key_is_not_listed",
+    ]),
+    "3.2": ("An empty value is not an absence", [
+        "test_empty_value_is_not_a_deletion",
+        "test_empty_value_written_after_a_delete",
+    ]),
+    "3.3": ("Delete has to be total", [
+        "test_delete_of_an_absent_key_is_a_noop",
+        "test_deleting_twice_is_a_noop",
+    ]),
+    "3.4": ("A key can come back on purpose", [
+        "test_set_after_delete_resurrects_the_key",
+        "test_delete_after_set_after_delete",
+    ]),
+    "3.5": ("What replay sees", [
+        "test_delete_appends_and_never_rewrites",
+        "test_a_deleted_key_costs_no_record_read",
+        "test_scan_records_what_actually_happened",
+        "test_matches_a_plain_dict_across_restarts",
+    ]),
+}
 import random
 
 import pytest
