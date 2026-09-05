@@ -1,12 +1,14 @@
 """What replay sees."""
 
-import pytest
 import random
+
+import pytest
 
 from consensus.logfile import LogFile
 from consensus.store import Store
 
 from ch3_helpers import reopen
+from tests.ch2.ch2_helpers import CountingLog   # chapter 2's instrument
 
 
 def test_delete_appends_and_never_rewrites(path):
@@ -26,8 +28,6 @@ def test_delete_appends_and_never_rewrites(path):
 
 def test_a_deleted_key_costs_no_record_read(path):
     # a deleted key is a miss, and a miss reads nothing (Chapter 2's rule).
-    from tests.ch2.ch2_helpers import CountingLog
-
     log = CountingLog(LogFile(path))
     s = Store(log)
     s.set("k", "v")
