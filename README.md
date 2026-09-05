@@ -71,6 +71,6 @@ pip install -e '.[dev]'
 pytest -q          # red until you implement the stubs
 ```
 
-Chapter 1 begins in `python/consensus/logfile.py` — read the docstring, then
-open `python/fixtures/mystery.log` and try to recover the three records it
+Chapter 1 begins in `consensus/logfile.py` — read the docstring, then
+open `fixtures/mystery.log` and try to recover the three records it
 holds. Do that by hand before writing code.

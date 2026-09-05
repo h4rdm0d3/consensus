@@ -7,10 +7,5 @@ venv/
 *.egg-info/
 build/
 dist/
-
-# Rust
-/rust/target/
-**/*.rs.bk
-
 # misc
 .DS_Store

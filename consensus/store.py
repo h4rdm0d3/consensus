@@ -36,7 +36,7 @@ The API:
 
     Store(LogFile(path))      # on an existing file, recovers everything
 
-Make python/tests/test_ch02_index.py go from red to green.
+Make the tests in tests/ch2/ go from red to green.
 """
 
 from collections.abc import Iterator
