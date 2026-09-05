@@ -23,16 +23,16 @@ Every test here kills a *plausible wrong* delete, not just an empty one:
 
 | file | what it forces | tests |
 | --- | --- | --- |
-| `test_1_absence_has_to_be_written_down.py` | Absence has to be written down | 3 |
+| `test_1_absence_must_be_written_down.py` | Absence must be written down | 3 |
 | `test_2_an_empty_value_is_not_an_absence.py` | An empty value is not an absence | 2 |
-| `test_3_delete_has_to_be_total.py` | Delete has to be total | 2 |
+| `test_3_delete_must_be_total.py` | Delete must be total | 2 |
 | `test_4_a_key_can_come_back_on_purpose.py` | A key can come back on purpose | 2 |
 | `test_5_what_replay_sees.py` | What replay sees | 4 |
 
 ## Running it
 
 ```
-pytest tests/ch3/test_1_absence_has_to_be_written_down.py   # one segment
+pytest tests/ch3/test_1_absence_must_be_written_down.py   # one segment
 pytest tests/ch3                                            # the whole chapter
 pytest                                                      # everything you have built so far
 ```

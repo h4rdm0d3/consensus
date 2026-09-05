@@ -1,4 +1,4 @@
-"""Absence has to be written down."""
+"""Absence must be written down."""
 
 from consensus.logfile import LogFile
 from consensus.store import Store

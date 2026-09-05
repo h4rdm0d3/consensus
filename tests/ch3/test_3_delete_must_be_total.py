@@ -1,4 +1,4 @@
-"""Delete has to be total."""
+"""Delete must be total."""
 
 from consensus.logfile import LogFile
 from consensus.store import Store
