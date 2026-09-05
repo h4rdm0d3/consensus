@@ -53,6 +53,7 @@ KEY_DESC = 1
 VERSION_DESC = 4
 HEADER_FMT = "<I2sIBB"
 HEADER_SIZE = struct.calcsize(HEADER_FMT)
+HEADER_REDUNDANCY = 2
 PROG_ID = b"kv"
 PROG_ID_SIZE = len(PROG_ID)
 
@@ -160,33 +161,48 @@ class LogFile(AbstractContextManager):
         if self.path.exists() and self.path.stat().st_size > 0:
             state, version, ksize, vsize = self.read_header()
             if state == RecordState.PRESENT:
-                self.version = version
+                assert self.version == version
                 self.ksize = ksize
                 self.vsize = vsize
-        if not self.path.exists() or state != RecordState.PRESENT:
+        if not self.path.exists() or state == RecordState.EOF:
             self.create_log()
+        if state == RecordState.CORRUPTED:
+            self.recover()
         self.rh = open(self.path, "rb")
         self.wh = open(self.path, "ab")
 
-    def create_log(self) -> None:
+    def create_log(self, mode: str = "wb") -> None:
         id_ = "kv".encode("utf-8")
         version = self.version.to_bytes(4, "little")
         ksize = self.ksize.to_bytes(1, "little")
-        vsize = (32).to_bytes(1, "little")
+        vsize = self.vsize.to_bytes(1, "little")
         crc = zlib.crc32(id_)
         for part in (version, ksize, vsize):
             crc = zlib.crc32(part, crc)
-        with open(self.path, "wb") as f:
-            f.write(crc.to_bytes(CRC_WIDTH, "little"))
-            f.write("kv".encode("utf-8"))
-            f.write(self.version.to_bytes(VERSION_DESC, "little"))
-            f.write(self.ksize.to_bytes(1, "little"))
-            f.write((32).to_bytes(1, "little"))
+        with open(self.path, mode) as f:
+            if mode == "rb+":
+                f.seek(0)
+            for _ in range(HEADER_REDUNDANCY):
+                f.write(crc.to_bytes(CRC_WIDTH, "little"))
+                f.write("kv".encode("utf-8"))
+                f.write(self.version.to_bytes(VERSION_DESC, "little"))
+                f.write(self.ksize.to_bytes(1, "little"))
+                f.write(self.vsize.to_bytes(1, "little"))
 
     def read_header(self) -> tuple[RecordState, int, int, int]:
-        corrupted = RecordState.CORRUPTED, -1, 1, -1
+        statuses = []
         with open(self.path, "rb") as f:
-            hdr = f.read(HEADER_SIZE)
+            for _ in range(HEADER_REDUNDANCY):
+                hdr = f.read(HEADER_SIZE)
+                statuses.append(self.header_status(hdr))
+        for s in statuses:
+            if s[0] != RecordState.CORRUPTED:
+                return s
+        return RecordState.CORRUPTED, -1, -1, -1
+
+    def header_status(self, hdr: bytes) -> tuple[RecordState, int, int, int]:
+        corrupted = RecordState.CORRUPTED, -1, -1, -1
+
         if len(hdr) < HEADER_SIZE:
             return (RecordState.EOF, -1, -1, -1)
         crc, id_, version, ksize, vsize = struct.unpack(HEADER_FMT, hdr)
@@ -198,6 +214,11 @@ class LogFile(AbstractContextManager):
             return corrupted
 
         return RecordState.PRESENT, version, ksize, vsize
+
+    def recover(self) -> None:
+        n_records = sum(1 for _ in self.walk())
+        if n_records > 0:
+            self.create_log(mode="rb+")
 
     def append(self, key: str, value: str, is_delete: bool = False) -> int:
         """Append one record. Chapter 2: return the offset it was written at."""
@@ -255,12 +276,40 @@ class LogFile(AbstractContextManager):
                     "[Corrupted Index]: No value metadata was found in the record."
                 )
 
+    def walk(self) -> Iterator[tuple[bytes, bytes | None]]:
+        if not self.wh.closed:
+            self.wh.flush()
+        with open(self.path, "rb") as f:
+            f.seek(HEADER_SIZE * HEADER_REDUNDANCY)
+            while True:
+                chkstate, actual = read_checksum(f)
+                kstate, kb = read_key_with_header(f, self.ksize)
+                vstate, vb = read_val_with_header(f, self.vsize)
+                match chkstate, kstate, vstate:
+                    case RecordState.EOF, _, _:
+                        return
+                    case RecordState.CORRUPTED, _, _:
+                        return
+                    case _, RecordState.CORRUPTED, _:
+                        return
+                    case _, _, RecordState.CORRUPTED:
+                        return
+                    case _, RecordState.DELETED, _:
+                        yield kb, None
+                    case RecordState.PRESENT, RecordState.PRESENT, RecordState.PRESENT:
+                        checksum = zlib.crc32(Flags.PRESENT.value)
+                        for part in (to_bytes(len(kb)), kb, to_bytes(len(vb)), vb):
+                            checksum = zlib.crc32(part, checksum)
+                        if checksum != actual:
+                            continue
+                        yield kb, vb
+
     def scan(self) -> Iterator[tuple[str, str | None]]:
         """Yield every record, in the order it was written."""
         if not self.wh.closed:
             self.wh.flush()
         with open(self.path, "rb") as f:
-            f.seek(HEADER_SIZE)
+            f.seek(HEADER_SIZE * HEADER_REDUNDANCY)
             while True:
                 offset = f.tell()
                 chkstate, actual = read_checksum(f)
@@ -294,7 +343,7 @@ class LogFile(AbstractContextManager):
         if not self.wh.closed:
             self.wh.flush()
         with open(self.path, "rb") as f:
-            f.seek(HEADER_SIZE)
+            f.seek(HEADER_SIZE * HEADER_REDUNDANCY)
             while True:
                 offset = f.tell()
                 chkstate, actual = read_checksum(f)
