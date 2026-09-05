@@ -19,6 +19,34 @@ Every test here kills a *plausible wrong* fingerprint:
     - key + value with no framing      -> distinct states collide
     - hash() or set iteration          -> the process's hash seed leaks in
 """
+
+TITLE = "Replay gives a different answer"
+TIER = "easy · single process, seeded faults, everything reproducible"
+
+BEATS = {
+    "4.1": ("A fingerprint is a pure observation", [
+        "test_hash_is_a_pure_observation",
+        "test_empty_store_is_stable",
+        "test_hash_survives_a_restart",
+    ]),
+    "4.2": ("The fingerprint sees state, not history", [
+        "test_insertion_order_does_not_reach_the_hash",
+        "test_history_does_not_reach_the_hash",
+    ]),
+    "4.3": ("Different states, different fingerprints", [
+        "test_a_different_value_changes_the_hash",
+        "test_a_different_key_changes_the_hash",
+        "test_an_extra_key_changes_the_hash",
+        "test_an_empty_value_is_not_an_absent_key",
+    ]),
+    "4.4": ("Framing again, now inside the hash", [
+        "test_no_framing_collision_in_the_hash",
+    ]),
+    "4.5": ("Two processes have to agree", [
+        "test_hash_does_not_depend_on_the_process",
+        "test_agreement_between_two_independently_built_stores",
+    ]),
+}
 import json
 import os
 import subprocess

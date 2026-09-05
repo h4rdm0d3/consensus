@@ -19,6 +19,30 @@ Every test here kills a *plausible wrong* recovery:
     - trusting structure alone      -> zeros become a key
     - recovering but not truncating -> the next append extends the garbage
 """
+
+TITLE = "The last record is half there"
+TIER = "hard · real sockets, real fsync, real kill -9"
+
+BEATS = {
+    "5.1": ("A record that can prove itself", [
+        "test_a_flipped_byte_in_the_last_record_is_detected",
+        "test_a_zero_filled_tail_is_not_data",
+    ]),
+    "5.2": ("Recover to a valid prefix", [
+        "test_truncation_at_every_offset_recovers_a_prefix",
+        "test_a_garbage_tail_does_not_corrupt_the_prefix",
+        "test_recovery_is_idempotent",
+        "test_writing_after_recovering_from_a_torn_tail",
+    ]),
+    "5.3": ("Acknowledged means durable", [
+        "test_acknowledged_writes_survive_kill_9",
+    ]),
+    "5.4": ("The header is data too", [
+        "test_a_damaged_header_never_destroys_the_log",
+        "test_every_header_byte_is_covered_by_its_checksum",
+        "test_a_format_version_from_the_future_is_refused",
+    ]),
+}
 import os
 import random
 import subprocess
