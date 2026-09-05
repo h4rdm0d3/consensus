@@ -1,16 +1,17 @@
 """Chapter 1 · Easy: records on disk that can be read back.
 
 The situation:
-    A key-value store must survive restart, so every write is appended to a
+    A key-value store has to survive a restart. So it appends every write to a
     file. The previous version wrote each record as the key's bytes followed by
-    the value's bytes, nothing else. `fixtures/mystery.log` is one such file.
-    It holds three records. Recover them.
+    the value's bytes, and nothing else.
 
-    (Do that first, by hand, before writing any code. Write down what you find.)
+    `fixtures/mystery.log` is one of those files. It holds three records.
+    Recover them by hand before you write any code, and write down what you
+    find. Where does the first record end?
 
 Your job:
-    Design the record format so that recovery is possible at all, and implement
-    the writer and the reader.
+    Design a record format you can read back. Then implement the writer and the
+    reader.
 
 You may not:
     - use a serialization library that hides the boundary for you. No json,
@@ -19,16 +20,16 @@ You may not:
       values are arbitrary strings: empty, newlines, NULs, commas, quotes,
       emoji, anything.
     - rewrite or move bytes that were already written. Append only.
-    - read the whole file and search for a parse that "works". Recovery is a
-      single forward pass: at every point you must know where you are.
+    - read the whole file and search for a parse that works. Recovery reads
+      forward once. You know where a record starts before you read it.
 
 You may assume:
-    - one process, one file, clean shutdown. Nothing crashes mid-write yet.
+    - one process, one file, a clean shutdown. Nothing crashes mid-write yet.
     - `str` keys and values.
 
 The API:
     log = LogFile(path)
-    log.append("k", "v")          # durable-ish, appends one record
+    log.append("k", "v")          # appends one record
     list(log.scan())              # -> [("k", "v"), ...] in write order
     log.close()
 
