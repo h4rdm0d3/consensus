@@ -91,11 +91,19 @@ def _write_outline(config, items):
             out.write_line(f"        {beat_id:<6} {beat_title:<48} {n:>3} {unit}")
         out.write_line("")
 
-    out.write_line(f"  {total} tests across {len(counts)} beats "
-                   f"in {len(chapters)} chapters")
-    out.write_line("")
-    out.write_line("  pytest --beat 3.2      one segment")
-    out.write_line("  pytest --upto 3.2      that segment and everything before it")
+    def plural(n, word):
+        return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+    out.write_line(f"  {plural(total, 'test')} across {plural(len(counts), 'beat')} "
+                   f"in {plural(len(chapters), 'chapter')}")
+
+    # Show an example that exists in *this* tree. A course cut down to chapter 1
+    # must not advertise --beat 3.2.
+    example = max(counts, key=_key) if counts else None
+    if example:
+        out.write_line("")
+        out.write_line(f"  pytest --beat {example}      one segment")
+        out.write_line(f"  pytest --upto {example}      that segment and everything before it")
     out.write_line("")
 
 
