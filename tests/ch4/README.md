@@ -31,7 +31,7 @@ Every test here kills a *plausible wrong* fingerprint:
 | file | what it forces | tests |
 | --- | --- | --- |
 | `test_1_fingerprint_is_pure_observation.py` | A fingerprint is a pure observation | 3 |
-| `test_2_fingerprint_history_agnostic.py` | The fingerprint is history agnostic | 2 |
+| `test_2_fingerprint_ignores_history.py` | The fingerprint ignores history | 2 |
 | `test_3_different_states_different_fingerprints.py` | Different states, different fingerprints | 4 |
 | `test_4_framing_inside_hash.py` | Framing again, inside the hash | 1 |
 | `test_5_two_processes_must_agree.py` | Two processes must agree | 2 |

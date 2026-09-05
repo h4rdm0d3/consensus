@@ -1,4 +1,4 @@
-"""The fingerprint is history agnostic."""
+"""The fingerprint ignores history."""
 
 from ch4_helpers import hash_of
 
