@@ -14,11 +14,6 @@ You may not:
     - read records you did not need. A lookup touches one record.
     - lose history. Every version ever written stays in the log.
 
-You may assume:
-    - one process, one file, a clean shutdown.
-    - the set of keys fits in memory, even though the values do not. That is an
-      engineering choice, not a law, and it has a cost.
-
 The API:
     store = Store(LogFile(path))
     store.set("k", "v")
