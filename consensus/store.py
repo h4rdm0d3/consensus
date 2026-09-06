@@ -11,7 +11,8 @@ The situation:
 You may not:
     - sort, rewrite, or move anything already in the log. Still append-only.
     - keep values in memory. The store must hold more data than fits in RAM.
-    - read records you did not need. A lookup touches one record.
+    - read more than one record to answer a lookup. A hit reads exactly one
+      record. A miss reads none.
     - lose history. Every version ever written stays in the log.
 
 The API:
