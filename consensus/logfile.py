@@ -2,14 +2,7 @@
 
 The situation:
     A key-value store must survive restarts. So it appends every write to a
-    file.
-
-    `fixtures/mystery.log` came from a store that did exactly that. It holds
-    three records. Recover them by hand before you write any code, and write
-    down what you find. Where does the first record end?
-
-Your job:
-    Design a record format you can read back.
+    file. Where does one record end and the next begin?
 
 You may not:
     - use a serialization library that hides the boundary for you. No json,
@@ -18,8 +11,9 @@ You may not:
       values are arbitrary strings: empty, newlines, NULs, commas, quotes,
       emoji, anything.
     - rewrite or move bytes that were already written. Append only.
-    - search the file for a parse that works. Recovery is one forward pass.
-      Before reading a record you already know where it starts.
+    - read the whole file into memory. A log outgrows RAM long before it
+      outgrows the disk.
+    - try candidate splits until one parses. Recovery is one forward pass.
 
 You may assume:
     - one process, one file, a clean shutdown.
