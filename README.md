@@ -2,19 +2,23 @@
 
 Build a replicated state machine out of its own failures.
 
-You start with a log on one disk. It becomes a log that survives a crash, then
-a log on five machines that all agree. Consensus is the algorithm that keeps
-those five copies identical, and it is most of the way through the course
-before you need it.
+We will understand consensus by building the system it manages, then breaking
+it. To get a sense of progression, we start small. One node, one disk, no
+network.
+
+At a high level, a consensus algorithm keeps five machines agreeing on one
+log. Agreeing on the order of the records in it, and on which of those records
+have been committed. That algorithm arrives in chapter 14. The thirteen
+chapters before it build the log it manages and the world it has to survive.
 
 This is not a how-to-build-Raft course. Those exist. This one is about **why
 these systems are built the way they are**: the forces that make each design
-decision inevitable, so you can re-derive a protocol you have forgotten and
-evaluate one you have never seen.
+decision inevitable, so we can re-derive a protocol we have forgotten and
+evaluate one we have never seen.
 
-Each chapter opens on a symptom you can reproduce: a concrete failure, a list
-of things you are **forbidden** from doing (so the cheap fix is closed off),
-and an executable **oracle** that goes red first. You make it green.
+Each chapter opens on a symptom you can reproduce. A concrete failure, a list
+of things you are **forbidden** from doing, so the cheap fix is closed off, and
+an executable **oracle** that goes red first. You make it green.
 
 ## What you build
 
