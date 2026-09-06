@@ -7,7 +7,7 @@ import time
 
 import pytest
 
-from consensus.logfile import HEADER_SIZE, LogFile
+from consensus.logfile import LogFile
 from consensus.store import Store
 
 from ch5_helpers import _PKG_ROOT, _WRITER
