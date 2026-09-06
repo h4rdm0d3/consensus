@@ -27,51 +27,60 @@ The API:
 Make the tests in tests/ch2/ go from red to green.
 """
 
+import hashlib
 from collections.abc import Iterator
 
-from consensus.logfile import LogFile
+from consensus.logfile import DeletedRecordError, LogFile, RecordState
 
 
 class Store:
     def __init__(self, log: LogFile) -> None:
-        raise NotImplementedError("Chapter 2: implement Store")
+        self.log = log
+        self.index: dict[str, int] = {}
+        self.build_index()
+
+    def build_index(self) -> None:
+        for k, _, offset, state in self.log.index_builder():
+            match state, k in self.index:
+                case RecordState.DELETED, True:
+                    del self.index[k]
+                case RecordState.PRESENT, _:
+                    self.index[k] = offset
 
     def set(self, key: str, value: str) -> None:
-        raise NotImplementedError("Chapter 2: implement set")
+        offset = self.log.append(key, value)
+        self.index[key] = offset
 
     def get(self, key: str) -> str | None:
         """The value written most recently for `key`, or None."""
-        raise NotImplementedError("Chapter 2: implement get")
+        offset = self.index.get(key)
+        if offset is not None:
+            try:
+                _, v = self.log.read_at(offset)
+                return v
+            except DeletedRecordError:
+                return None
+        return None
 
     def keys(self) -> Iterator[str]:
         """Every key that currently exists, once each."""
-        raise NotImplementedError("Chapter 2: implement keys")
+        for k in list(self.index.keys()):
+            yield k
 
-    # --- Chapter 3 -----------------------------------------------------------
-
-    def delete(self, key: str) -> None:
-        """Make `key` stop existing, permanently and across restarts.
-
-        You cannot remove bytes from the middle of an append-only file, so
-        absence has to be written down. Careful how you mark it: "" is a legal
-        value and has been since Chapter 1.
-        """
-        raise NotImplementedError("Chapter 3: implement delete")
-
-    # --- Chapter 4 -----------------------------------------------------------
+    def delete(self, k: str) -> None:
+        if k in self.index:
+            del self.index[k]
+        self.log.delete(k)
 
     def state_hash(self) -> str:
-        """A fingerprint of the store's logical state.
-
-        Live keys and their current values, and nothing else: not the history
-        that produced them, not where records sit in the file, not the order
-        keys were first written, not which process is asking.
-
-        Note the contrast with scan(). Chapter 3 required that to be injective
-        over histories. This is the opposite job: two stores that arrived at the
-        same state by different routes must agree.
-        """
-        raise NotImplementedError("Chapter 4: implement state_hash")
+        h = hashlib.sha256()
+        for k in sorted(self.index):
+            offset = self.index[k]
+            _, v = self.log.read_at(offset)
+            for x in (k, v):
+                h.update(len(x.encode("utf-8")).to_bytes(8, "little"))
+                h.update(x.encode("utf-8"))
+        return h.hexdigest()
 
     # --- Chapter 6 -----------------------------------------------------------
 
@@ -83,5 +92,15 @@ class Store:
         """
         raise NotImplementedError("Chapter 6: implement compact")
 
+    # --- Chapter 6 ---------------------------------------------------------
+
+    def compact(self) -> None:
+        """Reclaim the space held by records that no longer matter.
+
+        What the store answers with does not change. A key that was deleted
+        stays deleted, and a key written many times keeps its latest value.
+        """
+        raise NotImplementedError("Chapter 6: implement compact")
+
     def close(self) -> None:
-        raise NotImplementedError("Chapter 2: implement close")
+        self.log.close()
