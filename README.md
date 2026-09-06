@@ -2,15 +2,21 @@
 
 Build a replicated state machine out of its own failures.
 
-We will understand consensus by building the system it manages, then breaking
-it.
+A consensus algorithm must keep the replicated log consistent across all
+connected servers. That is the job, and everything here works toward it.
 
-At a high level, a consensus algorithm must keep the replicated log consistent
-across all connected servers. Speed matters, but it is not the job.
+Consensus is defined over a log, so the log comes first. Chapters 1 to 7 build
+one on a single machine: records that read back, a state you can rebuild by
+replaying them, and a file that survives a crash in the middle of a write.
+Nothing distributed, on purpose. Until one log is trustworthy there is nothing
+worth copying.
 
-First we build the pieces on a single node. One disk, one process, no network.
-Then we replicate that log across machines. Keeping the copies consistent is
-the problem. Raft is one way to solve it, and not the only one.
+Then we put that log on five machines and they start to disagree. Keeping the
+copies identical is the problem, and it is the problem Raft solves. Raft is one
+way to solve it, and not the only one.
+
+If you already know a part, skip it. Every chapter has a starting point with
+the earlier ones already built.
 
 This is not a how-to-build-Raft course. Those exist. This one is about **why
 these systems are built the way they are**: the forces that make each design
@@ -112,12 +118,19 @@ A performance change that regresses any of these is a regression, not a speedup.
 ## Start
 
 ```sh
-cd python
-python -m venv .venv && source .venv/bin/activate
-pip install -e '.[dev]'
+uv sync --extra dev
 pytest -q          # red until you implement the stubs
 ```
 
-Chapter 1 begins in `consensus/logfile.py`. Read the docstring, then
-open `fixtures/mystery.log` and try to recover the three records it
-holds. Do that by hand before writing code.
+Chapter 1 begins in `consensus/logfile.py`. Read the docstring, then open
+`fixtures/mystery.log` and recover the three records it holds. Do that by hand
+before writing code.
+
+To start at a later chapter, check out its starting point. The chapters before
+it are implemented, this one is red, and nothing from the chapters after it is
+in the tree:
+
+```sh
+git checkout start/ch3
+pytest             # chapter 3 red, chapters 1 and 2 green
+```
