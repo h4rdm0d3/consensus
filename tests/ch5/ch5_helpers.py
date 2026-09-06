@@ -2,7 +2,7 @@
 
 import os
 
-from consensus.logfile import HEADER_SIZE, LogFile
+from consensus.logfile import LogFile
 from consensus.store import Store
 _PKG_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

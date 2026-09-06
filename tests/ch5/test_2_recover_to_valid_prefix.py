@@ -2,7 +2,7 @@
 
 import random
 
-from consensus.logfile import HEADER_SIZE, LogFile
+from consensus.logfile import LogFile
 from consensus.store import Store
 
 from ch5_helpers import assert_is_a_prefix, build

@@ -31,14 +31,6 @@ Make the tests in tests/ch1/ go from red to green.
 from collections.abc import Iterator
 
 
-# Chapter 5: the log grows a header, and the header is data too. Set this to
-# the total number of bytes the header occupies at the front of the file,
-# counting every copy of it if you decide to keep more than one, so that
-# recovery knows where records begin. The oracle uses it to aim damage at the
-# header and nowhere else.
-HEADER_SIZE = 0
-
-
 class LogFile:
     def __init__(self, path: str) -> None:
         raise NotImplementedError("Chapter 1: implement LogFile")
