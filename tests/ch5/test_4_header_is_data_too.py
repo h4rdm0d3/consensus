@@ -62,7 +62,7 @@ def test_destroyed_header_is_refused_not_guessed(tmp_path):
     # returns a value nobody wrote.
     #
     # A format with no header at all fails here, and that is the point: this is
-    # what makes the header necessary rather than suggested.
+    # what makes the header necessary and not merely suggested.
     n = data_start(str(tmp_path / "probe.log"))
     p = str(tmp_path / "wrecked.log")
     build(p)
