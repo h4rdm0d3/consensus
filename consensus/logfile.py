@@ -2,16 +2,14 @@
 
 The situation:
     A key-value store must survive restarts. So it appends every write to a
-    file. The previous version wrote each record as the key's bytes followed by
-    the value's bytes, and nothing else.
+    file.
 
-    `fixtures/mystery.log` is one of those files. It holds three records.
-    Recover them by hand before you write any code, and write down what you
-    find. Where does the first record end?
+    `fixtures/mystery.log` came from a store that did exactly that. It holds
+    three records. Recover them by hand before you write any code, and write
+    down what you find. Where does the first record end?
 
 Your job:
-    Design a record format you can read back. Then implement the writer and the
-    reader.
+    Design a record format you can read back.
 
 You may not:
     - use a serialization library that hides the boundary for you. No json,
@@ -20,11 +18,11 @@ You may not:
       values are arbitrary strings: empty, newlines, NULs, commas, quotes,
       emoji, anything.
     - rewrite or move bytes that were already written. Append only.
-    - read the whole file and search for a parse that works. Recovery reads
-      forward once. You know where a record starts before you read it.
+    - search the file for a parse that works. Recovery is one forward pass.
+      Before reading a record you already know where it starts.
 
 You may assume:
-    - one process, one file, a clean shutdown. Nothing crashes mid-write yet.
+    - one process, one file, a clean shutdown.
     - `str` keys and values.
 
 The API:
