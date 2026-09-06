@@ -3,13 +3,14 @@
 Build a replicated state machine out of its own failures.
 
 We will understand consensus by building the system it manages, then breaking
-it. To get a sense of progression, we start small. One node, one disk, no
-network.
+it.
 
-At a high level, a consensus algorithm keeps five machines agreeing on one
-log. Agreeing on the order of the records in it, and on which of those records
-have been committed. That algorithm arrives in chapter 14. The thirteen
-chapters before it build the log it manages and the world it has to survive.
+At a high level, a consensus algorithm must keep the replicated log consistent
+across all connected servers. Speed matters, but it is not the job.
+
+First we build the pieces on a single node. One disk, one process, no network.
+Then we replicate that log across machines. Keeping the copies consistent is
+the problem. Raft is one way to solve it, and not the only one.
 
 This is not a how-to-build-Raft course. Those exist. This one is about **why
 these systems are built the way they are**: the forces that make each design
