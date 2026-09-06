@@ -47,41 +47,5 @@ class Store:
         """Every key that currently exists, once each."""
         raise NotImplementedError("Chapter 2: implement keys")
 
-    # --- Chapter 3 -----------------------------------------------------------
-
-    def delete(self, key: str) -> None:
-        """Make `key` stop existing, permanently and across restarts.
-
-        You cannot remove bytes from the middle of an append-only file, so
-        absence has to be written down. Careful how you mark it: "" is a legal
-        value and has been since Chapter 1.
-        """
-        raise NotImplementedError("Chapter 3: implement delete")
-
-    # --- Chapter 4 -----------------------------------------------------------
-
-    def state_hash(self) -> str:
-        """A fingerprint of the store's logical state.
-
-        Live keys and their current values, and nothing else: not the history
-        that produced them, not where records sit in the file, not the order
-        keys were first written, not which process is asking.
-
-        Note the contrast with scan(). Chapter 3 required that to be injective
-        over histories. This is the opposite job: two stores that arrived at the
-        same state by different routes must agree.
-        """
-        raise NotImplementedError("Chapter 4: implement state_hash")
-
-    # --- Chapter 6 -----------------------------------------------------------
-
-    def compact(self) -> None:
-        """Reclaim the space held by records that no longer matter.
-
-        What the store answers with does not change. A key that was deleted
-        stays deleted, and a key written many times keeps its latest value.
-        """
-        raise NotImplementedError("Chapter 6: implement compact")
-
     def close(self) -> None:
         raise NotImplementedError("Chapter 2: implement close")
