@@ -34,20 +34,32 @@ from consensus.logfile import LogFile
 
 class Store:
     def __init__(self, log: LogFile) -> None:
-        raise NotImplementedError("Chapter 2: implement Store")
+        self.log = log
+        self.index: dict[str, int] = {}
+        self.build_index()
+
+    def build_index(self) -> None:
+        for k, _, offset in self.log.index_builder():
+            self.index[k] = offset
 
     def set(self, key: str, value: str) -> None:
-        raise NotImplementedError("Chapter 2: implement set")
+        offset = self.log.append(key, value)
+        self.index[key] = offset
 
     def get(self, key: str) -> str | None:
         """The value written most recently for `key`, or None."""
-        raise NotImplementedError("Chapter 2: implement get")
+        offset = self.index.get(key)
+        if offset is not None:
+            k, v = self.log.read_at(offset)
+            return v
+        return None
 
     def keys(self) -> Iterator[str]:
         """Every key that currently exists, once each."""
-        raise NotImplementedError("Chapter 2: implement keys")
+        for k in list(self.index.keys()):
+            yield k
 
-    # --- Chapter 3 -----------------------------------------------------------
+    # --- Chapter 3 ---------------------------------------------------------------------
 
     def delete(self, key: str) -> None:
         """Make `key` stop existing, permanently and across restarts.
@@ -58,30 +70,5 @@ class Store:
         """
         raise NotImplementedError("Chapter 3: implement delete")
 
-    # --- Chapter 4 -----------------------------------------------------------
-
-    def state_hash(self) -> str:
-        """A fingerprint of the store's logical state.
-
-        Live keys and their current values, and nothing else: not the history
-        that produced them, not where records sit in the file, not the order
-        keys were first written, not which process is asking.
-
-        Note the contrast with scan(). Chapter 3 required that to be injective
-        over histories. This is the opposite job: two stores that arrived at the
-        same state by different routes must agree.
-        """
-        raise NotImplementedError("Chapter 4: implement state_hash")
-
-    # --- Chapter 6 -----------------------------------------------------------
-
-    def compact(self) -> None:
-        """Reclaim the space held by records that no longer matter.
-
-        What the store answers with does not change. A key that was deleted
-        stays deleted, and a key written many times keeps its latest value.
-        """
-        raise NotImplementedError("Chapter 6: implement compact")
-
     def close(self) -> None:
-        raise NotImplementedError("Chapter 2: implement close")
+        self.log.close()
