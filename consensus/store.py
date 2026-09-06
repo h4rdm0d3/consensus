@@ -82,5 +82,15 @@ class Store:
                 h.update(x.encode("utf-8"))
         return h.hexdigest()
 
+    # --- Chapter 6 -----------------------------------------------------------
+
+    def compact(self) -> None:
+        """Reclaim the space held by records that no longer matter.
+
+        What the store answers with does not change. A key that was deleted
+        stays deleted, and a key written many times keeps its latest value.
+        """
+        raise NotImplementedError("Chapter 6: implement compact")
+
     def close(self) -> None:
         self.log.close()
