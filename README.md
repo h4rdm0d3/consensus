@@ -2,14 +2,53 @@
 
 Build a replicated state machine out of its own failures.
 
-This is not a how-to-build-Raft course. Those exist. This one is about **why
-these systems are built exactly the way they are**: the forces that make each
-design decision inevitable, so you can re-derive a protocol you've forgotten and
-evaluate one you've never seen.
+You start with a log on one disk. It becomes a log that survives a crash, then
+a log on five machines that all agree. Consensus is the algorithm that keeps
+those five copies identical, and it is most of the way through the course
+before you need it.
 
-Each chapter is a system that **already broke**: a concrete symptom, a list of
-things you're **forbidden** from doing (so the cheap fix is closed off), and an
-executable **oracle** that goes red first. You make it green.
+This is not a how-to-build-Raft course. Those exist. This one is about **why
+these systems are built the way they are**: the forces that make each design
+decision inevitable, so you can re-derive a protocol you have forgotten and
+evaluate one you have never seen.
+
+Each chapter opens on a symptom you can reproduce: a concrete failure, a list
+of things you are **forbidden** from doing (so the cheap fix is closed off),
+and an executable **oracle** that goes red first. You make it green.
+
+## What you build
+
+Consensus is the small box. Most of the course is the system around it.
+That system is what consensus was invented to manage.
+
+```
+  outside consensus, and the reason it exists
+  ---------------------------------------------------------------
+
+    a state machine                      a durable log
+    keys and values, rebuilt             records that read back,
+    by replaying the log                 survive a crash, and reclaim
+    ch 2, 3, 4                           space   ch 1, 5, 6, 7
+
+            +-------------------------------------------+
+            |  consensus                                |
+            |                                           |
+            |  one leader per term        ch 14, 16     |
+            |  replicate and commit       ch 15, 17     |
+            |  who may become leader      ch 18         |
+            |  changing the membership    ch 21         |
+            +-------------------------------------------+
+
+    a network you cannot trust           telling dead from slow
+    drops, reorders, duplicates,         no global clock, no
+    splits messages in half              perfect failure detector
+    ch 8, 9, 10                          ch 11, 12, 13
+```
+
+The four outer boxes are not Raft. They are the problems that make Raft's
+shape inevitable, and each one has a chapter that breaks before the fix
+arrives. Parts V and VI put the whole thing on real machines and then measure
+it.
 
 The oracle is written to fail a *plausible wrong* answer, not just an empty one.
 If a naive solution passes everything, the oracle is broken. Open an issue.
